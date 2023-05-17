@@ -1,11 +1,10 @@
-from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from .models import Like
 
-User = get_user_model()
+from user.models import User
+from .models import Like, Post
 
 
-def add_like(obj, user):
+def add_like(obj: Post, user: User) -> Like:
     """Likes `obj`."""
 
     obj_type = ContentType.objects.get_for_model(obj)
@@ -15,7 +14,7 @@ def add_like(obj, user):
     return like
 
 
-def remove_like(obj, user):
+def remove_like(obj: Post, user: User) -> None:
     """Deletes like from `obj`."""
 
     obj_type = ContentType.objects.get_for_model(obj)
