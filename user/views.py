@@ -18,7 +18,7 @@ class CreateUserView(generics.ListCreateAPIView):
         queryset = get_user_model().objects.all()
         nickname = self.request.query_params.get("nickname")
 
-        if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated and nickname:
             queryset = queryset.filter(nickname=nickname)
 
         return queryset
