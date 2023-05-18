@@ -61,7 +61,12 @@ class Post(models.Model):
 class Commentary(models.Model):
     commentary = models.CharField(max_length=350)
     post = models.ForeignKey(
-        Post, on_delete=models.PROTECT, related_name="commentaries"
+        Post, on_delete=models.CASCADE, related_name="commentaries"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="commentaries",
     )
 
     def __str__(self) -> str:
