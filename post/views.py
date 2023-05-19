@@ -10,6 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from post import services
 from post.models import Post, Commentary
+from post.permissions import IsAuthenticatedOrAnonymous
 from post.serializers import (
     PostSerializer,
     CommentarySerializer,
@@ -24,6 +25,7 @@ class PostViewSet(ModelViewSet):
     """Post CRUD endpoints"""
 
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticatedOrAnonymous,)
 
     def get_queryset(self) -> QuerySet[Post]:
         following_queryset = UserFollowing.objects.filter(
