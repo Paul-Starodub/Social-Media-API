@@ -5,6 +5,7 @@ import os
 import uuid
 from typing import Any, Optional
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractUser,
     BaseUserManager,
@@ -23,6 +24,7 @@ class UserManager(BaseUserManager):
         self, email: str, password: str, **extra_fields: dict[str, Any]
     ) -> ValueError | User:
         """Create and save a User with the given email and password."""
+
         if not email:
             raise ValueError("The given email must be set")
         email = self.normalize_email(email)
@@ -38,6 +40,7 @@ class UserManager(BaseUserManager):
         **extra_fields: dict[str, Any],
     ) -> User:
         """Create and save a regular User with the given email and password."""
+
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
@@ -46,6 +49,7 @@ class UserManager(BaseUserManager):
         self, email: str, password: str, **extra_fields: dict[str, Any]
     ) -> ValueError | User:
         """Create and save a SuperUser with the given email and password."""
+
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -71,11 +75,11 @@ class User(AbstractUser):
     nickname = models.CharField(_("nickname"), max_length=15, unique=True)
     date_of_birth = models.DateField(_("date of birth"))
     biography = models.CharField(
-        _("short biography"), max_length=400, blank=True, null=True
+        _("short biography"), max_length=400, blank=True
     )
     email = models.EmailField(_("email address"), unique=True)
     profile_image = models.ImageField(
-        null=True, blank=True, upload_to=movie_image_file_path
+        blank=True, upload_to=movie_image_file_path
     )
 
     USERNAME_FIELD = "email"
@@ -93,3 +97,30 @@ class User(AbstractUser):
         ]
 
     objects = UserManager()
+
+
+class UserFollowing(models.Model):
+    user_id = models.ForeignKey(
+        get_user_model(),
+        related_name="following",
+        on_delete=models.CASCADE,
+    )
+    following_user_id = models.ForeignKey(
+        get_user_model(),
+        related_name="followers",
+        on_delete=models.CASCADE,
+    )
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "following_user_id"],
+                name="unique_followers",
+            )
+        ]
+
+        ordering = ["-created"]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} follows {self.following_user_id}"
