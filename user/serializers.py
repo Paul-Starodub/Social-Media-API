@@ -9,10 +9,23 @@ from user.models import User, UserFollowing
 
 
 class FollowingSerializer(serializers.ModelSerializer):
+    user_id = serializers.SlugRelatedField(
+        many=False,
+        read_only=False,
+        slug_field="email",
+        queryset=User.objects.all(),
+    )
+    following_user_id = serializers.SlugRelatedField(
+        many=False,
+        read_only=False,
+        slug_field="email",
+        queryset=User.objects.all(),
+    )
+
     class Meta:
         model = UserFollowing
         fields = ("id", "user_id", "following_user_id", "created")
-        read_only_fields = ("created",)
+        read_only_fields = ("created", "user_id")
         validators = [
             UniqueTogetherValidator(
                 queryset=UserFollowing.objects.all(),
@@ -22,6 +35,13 @@ class FollowingSerializer(serializers.ModelSerializer):
 
 
 class FollowersSerializer(serializers.ModelSerializer):
+    user_id = serializers.SlugRelatedField(
+        many=False,
+        read_only=False,
+        slug_field="email",
+        queryset=User.objects.all(),
+    )
+
     class Meta:
         model = UserFollowing
         fields = ("id", "user_id", "created")
