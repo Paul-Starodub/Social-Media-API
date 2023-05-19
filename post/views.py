@@ -1,6 +1,6 @@
 from typing import Type, Optional
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from rest_framework import status, generics
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -17,6 +17,7 @@ from post.serializers import (
     LikePostSerializer,
     CommentaryRemoveSerializer,
 )
+from user.models import UserFollowing
 
 
 class PostViewSet(ModelViewSet):
@@ -25,7 +26,15 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
 
     def get_queryset(self) -> QuerySet[Post]:
-        queryset = Post.objects.all()
+        following_queryset = UserFollowing.objects.filter(
+            user_id=self.request.user
+        )
+        following_users_ids = [
+            user.following_user_id.id for user in following_queryset
+        ]
+        queryset = Post.objects.filter(
+            Q(user_id__in=following_users_ids) | Q(user=self.request.user)
+        )
         hashtag = self.request.query_params.get("hashtag")
 
         if hashtag:
