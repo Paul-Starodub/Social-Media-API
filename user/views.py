@@ -1,10 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 from rest_framework import generics, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
 from user.models import User, UserFollowing
-from user.permissions import IsAuthenticatedOrAnonymous
+from user.permissions import IsAuthenticatedOrAnonymous, IsOwnerFollowing
 from user.serializers import (
     UserSerializer,
     FollowingSerializer,
@@ -48,6 +51,16 @@ class UserFollowingViewSet(viewsets.ModelViewSet):
 
     serializer_class = FollowingSerializer
     queryset = UserFollowing.objects.all()
+    permission_classes = (IsOwnerFollowing,)
 
     def perform_create(self, serializer: Serializer) -> None:
         serializer.save(user_id=self.request.user)
+
+    def create(
+        self, request: Request, *args: tuple, **kwargs: dict
+    ) -> ValidationError | Response:
+        # you can only sign yourself
+        if self.request.user.id != int(request.data["user_id"]):
+            raise ValidationError("You cannot sign other users!")
+
+        return super().create(request, *args, **kwargs)
