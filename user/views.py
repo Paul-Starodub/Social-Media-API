@@ -60,7 +60,7 @@ class UserFollowingViewSet(viewsets.ModelViewSet):
         self, request: Request, *args: tuple, **kwargs: dict
     ) -> ValidationError | Response:
         # you can only sign yourself
-        if self.request.user.id != int(request.data["user_id"]):
+        if self.request.user.email != request.data["user_id"]:
             raise ValidationError("You cannot sign other users!")
 
         return super().create(request, *args, **kwargs)
