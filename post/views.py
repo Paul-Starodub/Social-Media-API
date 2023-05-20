@@ -34,8 +34,12 @@ class PostViewSet(ModelViewSet):
         following_users_ids = [
             user.following_user_id.id for user in following_queryset
         ]
-        queryset = Post.objects.filter(
-            Q(user_id__in=following_users_ids) | Q(user=self.request.user)
+        queryset = (
+            Post.objects.filter(
+                Q(user_id__in=following_users_ids) | Q(user=self.request.user)
+            )
+            .prefetch_related("commentaries__user")
+            .select_related("user")
         )
         hashtag = self.request.query_params.get("hashtag")
 
@@ -159,4 +163,6 @@ class CommentaryViewSet(generics.ListAPIView):
     serializer_class = CommentarySerializer
 
     def get_queryset(self) -> QuerySet[Commentary]:
-        return Commentary.objects.filter(user_id=self.request.user.id)
+        return Commentary.objects.filter(
+            user_id=self.request.user.id
+        ).select_related("post", "user")
