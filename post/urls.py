@@ -4,7 +4,7 @@ from rest_framework import routers
 from post.views import PostViewSet, CommentaryViewSet
 
 router = routers.DefaultRouter()
-router.register("posts", PostViewSet, basename="post-list")
+router.register("posts", PostViewSet, basename="post")
 
 urlpatterns = [
     path("", include(router.urls)),
