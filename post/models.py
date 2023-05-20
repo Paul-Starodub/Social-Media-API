@@ -51,7 +51,7 @@ class Post(models.Model):
         return self.content[:25]
 
     @property
-    def total_likes(self):
+    def total_likes(self) -> int:
         return self.likes.count()
 
     class Meta:
