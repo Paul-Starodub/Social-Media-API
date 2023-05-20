@@ -37,7 +37,7 @@ class CreateUserView(generics.ListCreateAPIView):
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                "nickname",
+                name="nickname",
                 type=OpenApiTypes.STR,
                 description="Filtering by nickname (ex. ?nickname=monika)",
             ),
