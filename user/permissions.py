@@ -18,6 +18,12 @@ class IsAuthenticatedOrAnonymous(BasePermission):
 class IsOwnerFollowing(BasePermission):
     """Permissions for users owners"""
 
+    def has_permission(self, request: Request, view: View) -> bool:
+        if (
+            request.user.is_anonymous and request.method in SAFE_METHODS
+        ) or request.user.is_authenticated:
+            return True
+
     def has_object_permission(
         self, request: Request, view: View, obj: UserFollowing
     ) -> bool:

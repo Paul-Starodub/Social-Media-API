@@ -9,21 +9,18 @@ class IsAuthenticatedOrAnonymous(BasePermission):
     """Permissions for authorized/unauthorized users"""
 
     def has_permission(self, request: Request, view: View) -> bool:
-        if request.user.is_anonymous:
-            return False
-        return True
+        return request.user.is_authenticated
 
-    def has_object_permission(
-        self, request: Request, view: View, obj: Post
-    ) -> bool:
+    def has_object_permission(self, request: Request, view: View, obj: Post) -> bool:
         if request.user.is_authenticated and view.action in (
-            "leave_comment",
-            "like",
-            "unlike",
-            "remove_all_comments",
+            (
+                "leave_comment",
+                "like",
+                "unlike",
+                "remove_all_comments",
+            )
+            + SAFE_METHODS
         ):
-            return True
-        if request.user.is_authenticated and request.method in SAFE_METHODS:
             return True
 
         return obj.user == request.user
