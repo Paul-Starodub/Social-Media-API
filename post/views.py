@@ -23,9 +23,15 @@ from post.serializers import (
 from user.models import UserFollowing
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)
+    ]
+)
 class PostViewSet(ModelViewSet):
     """Post CRUD endpoints"""
 
+    lookup_field = "id"
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticatedOrAnonymous,)
 
