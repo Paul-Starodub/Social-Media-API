@@ -53,9 +53,13 @@ You can use following:
 - superuser:
   - Email: admin@gmail.com
   - Password: 1qazcde3
+  - nickname: admin
+  - date_of_birth: 2015-01-01
 - user:
   - Email: postgres@gmail.com
   - Password: 1qazcde3
+  - nickname: postgres
+  - date_of_birth: 2015-01-01
 ## Note: Make sure to send Token in api urls in Headers as follows
 ```
 key: Authorize
