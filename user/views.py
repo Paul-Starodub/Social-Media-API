@@ -21,7 +21,10 @@ class CreateUserView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrAnonymous,)
 
     def get_queryset(self) -> QuerySet:
-        queryset = get_user_model().objects.all()
+        queryset = get_user_model().objects.prefetch_related(
+            "following",
+            "followers",
+        )
         nickname = self.request.query_params.get("nickname")
 
         if self.request.user.is_authenticated and nickname:
@@ -50,7 +53,9 @@ class UserFollowingViewSet(viewsets.ModelViewSet):
     """Following users"""
 
     serializer_class = FollowingSerializer
-    queryset = UserFollowing.objects.all()
+    queryset = UserFollowing.objects.prefetch_related(
+        "user_id", "following_user_id"
+    )
     permission_classes = (IsOwnerFollowing,)
 
     def perform_create(self, serializer: Serializer) -> None:
