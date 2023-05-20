@@ -1,6 +1,8 @@
 from typing import Type, Optional
 
 from django.db.models import QuerySet, Q
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, generics
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -155,6 +157,19 @@ class PostViewSet(ModelViewSet):
 
         serializer = self.get_serializer(like_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="hashtag",
+                description="Filter by hashtag insensitive contains (ex. ?hashtag=post)",
+                type=OpenApiTypes.STR,
+            ),
+        ]
+    )
+    def list(self, request: Request, *args: tuple, **kwargs: dict) -> Response:
+        """List characters with filter by name"""
+        return super().list(request, *args, **kwargs)
 
 
 class CommentaryViewSet(generics.ListAPIView):

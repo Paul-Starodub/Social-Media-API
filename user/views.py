@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
@@ -31,6 +33,18 @@ class CreateUserView(generics.ListCreateAPIView):
             queryset = queryset.filter(nickname=nickname)
 
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "nickname",
+                type=OpenApiTypes.STR,
+                description="Filtering by nickname (ex. ?nickname=monika)",
+            ),
+        ]
+    )
+    def get(self, request: Request, *args: tuple, **kwargs: dict) -> Response:
+        return super().list(request, *args, **kwargs)
 
 
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
