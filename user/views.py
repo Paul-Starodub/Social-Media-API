@@ -6,7 +6,6 @@ from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
 
 from user.models import User, UserFollowing
 from user.permissions import IsAuthenticatedOrAnonymous, IsOwnerFollowing
@@ -37,7 +36,7 @@ class CreateUserView(generics.ListCreateAPIView):
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                "nickname",
+                name="nickname",
                 type=OpenApiTypes.STR,
                 description="Filtering by nickname (ex. ?nickname=monika)",
             ),
@@ -67,13 +66,8 @@ class UserFollowingViewSet(viewsets.ModelViewSet):
     """Following users"""
 
     serializer_class = FollowingSerializer
-    queryset = UserFollowing.objects.prefetch_related(
-        "user_id", "following_user_id"
-    )
+    queryset = UserFollowing.objects.prefetch_related("user_id", "following_user_id")
     permission_classes = (IsOwnerFollowing,)
-
-    def perform_create(self, serializer: Serializer) -> None:
-        serializer.save(user_id=self.request.user)
 
     def create(
         self, request: Request, *args: tuple, **kwargs: dict

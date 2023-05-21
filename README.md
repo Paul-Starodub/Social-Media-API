@@ -22,7 +22,6 @@ You are tasked with building a RESTful API for a social media platform. The API 
 - Creating followings at /api/users/followings/
 - Followings detail at /api/users/followings/{pk}/
 
-[//]: # (- Celery task to overdue borrowing by Redis broker)
 
 # Installing using GitHub
 ```
@@ -62,6 +61,6 @@ You can use following:
   - date_of_birth: 2015-01-01
 ## Note: Make sure to send Token in api urls in Headers as follows
 ```
-key: Authorize
+key: Authorization
 value: Bearer <token>
 ```

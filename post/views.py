@@ -23,9 +23,15 @@ from post.serializers import (
 from user.models import UserFollowing
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("pk", OpenApiTypes.STR, OpenApiParameter.PATH)
+    ]
+)
 class PostViewSet(ModelViewSet):
     """Post CRUD endpoints"""
 
+    lookup_field = "pk"
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticatedOrAnonymous,)
 
@@ -94,9 +100,7 @@ class PostViewSet(ModelViewSet):
         url_path="comment",
         serializer_class=CommentarySerializer,
     )
-    def leave_comment(
-        self, request: Request, pk: Optional[int] = None
-    ) -> Response:
+    def comment(self, request: Request, pk: Optional[int] = None) -> Response:
         """Creates comment"""
 
         post = self.get_object()
@@ -116,9 +120,7 @@ class PostViewSet(ModelViewSet):
         url_path="remove",
         serializer_class=CommentaryRemoveSerializer,
     )
-    def remove_all_comments(
-        self, request: Request, pk: Optional[int] = None
-    ) -> Response:
+    def remove(self, request: Request, pk: Optional[int] = None) -> Response:
         """Deletes all own commentaries"""
 
         commentaries = self.get_object().commentaries.filter(
@@ -137,9 +139,7 @@ class PostViewSet(ModelViewSet):
         detail=False,
         url_path="liked",
     )
-    def liked_posts(
-        self, request: Request, pk: Optional[int] = None
-    ) -> Response:
+    def liked(self, request: Request, pk: Optional[int] = None) -> Response:
         """Liked posts"""
 
         queryset = self.filter_queryset(self.get_queryset()).filter()
@@ -168,7 +168,7 @@ class PostViewSet(ModelViewSet):
         ]
     )
     def list(self, request: Request, *args: tuple, **kwargs: dict) -> Response:
-        """List characters with filter by name"""
+        """List characters with filter by hashtag"""
         return super().list(request, *args, **kwargs)
 
 
